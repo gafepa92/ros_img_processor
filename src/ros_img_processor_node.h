@@ -9,6 +9,10 @@
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
 #include <sensor_msgs/CameraInfo.h>
+#include "ros/ros.h"
+#include "std_msgs/Float64.h"
+#include "std_msgs/String.h"
+#include "geometry_msgs/PoseStamped.h"
 
 /** \brief Simple Image Processor
  *
@@ -35,15 +39,21 @@ class RosImgProcessorNode
         cv_bridge::CvImagePtr cv_img_ptr_in_;
         cv_bridge::CvImage cv_img_out_;
 
-		//Camera matrix
-		cv::Mat matrixP_;
-
+	     	//Camera matrix
+		    cv::Mat matrixP_;
+        ros::Publisher dir_ball  = nh_.advertise<geometry_msgs::PoseStamped>("position", 1);
+        //shows position, orientation and a header
         //image encoding label
         std::string img_encoding_;
 
         //wished process rate, [hz]
         double rate_;
-
+        // intrinsic calibration matrix K
+        cv::Mat matrixK_;
+        //inverse K matrixP
+        cv::Mat invK_;
+        //
+        cv::Mat direction = (cv::Mat_<double>(3,1) << 0, 0, 0);
     protected:
         // callbacks
         void imageCallback(const sensor_msgs::ImageConstPtr& _msg);
